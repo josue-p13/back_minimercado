@@ -1,3 +1,7 @@
+"""
+Sistema de Gestión de Minimercado
+Script principal de ejemplo
+"""
 from app.database.connection import init_db
 from app.controllers.auth_controller import AuthController
 from app.controllers.inventario_controller import InventarioController
