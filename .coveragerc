@@ -1,0 +1,41 @@
+[run]
+# Archivos a incluir en el análisis de cobertura
+source = app/controllers
+
+# Omitir estos archivos
+omit = 
+    */tests/*
+    */venv/*
+    */__pycache__/*
+    */site-packages/*
+    */.venv/*
+
+[report]
+# Mostrar líneas que no tienen cobertura
+show_missing = True
+
+# Precisión de los porcentajes
+precision = 2
+
+# Excluir líneas de la cobertura
+exclude_lines =
+    # Declaraciones estándar de exclusión
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+    @abc.abstractmethod
+    
+# Nivel mínimo de cobertura requerido: 60%
+fail_under = 60
+
+[html]
+# Directorio para el reporte HTML
+directory = htmlcov
+
+[xml]
+# Archivo de salida para el reporte XML
+output = coverage.xml

@@ -25,3 +25,20 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Testing y Cobertura
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.pytest_cache/
+.tox/
+.hypothesis/
+junit/
+test-results/
+*.log
+
+# Reportes
+reports/
+test_reports/
