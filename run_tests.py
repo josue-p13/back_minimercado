@@ -22,7 +22,7 @@ def run_command(command, description):
 
 def main():
     print("🧪 Iniciando ejecución de pruebas unitarias")
-    print("📁 Proyecto: Back Minimercado - Controllers")
+    print("📁 Proyecto: Back Minimercado - Controllers y Repositories")
     
     # Verificar que pytest está instalado
     try:
@@ -33,11 +33,17 @@ def main():
         print("Ejecuta: pip install -r requirements.txt")
         sys.exit(1)
     
-    # Ejecutar tests con cobertura
+    # Ejecutar tests con cobertura acumulada (solo controllers + repositories)
     commands = [
+        # PRIMERA CORRIDA: Controllers generan datos de cobertura (sin reportes)
         (
-            "pytest tests/controllers/ -v --cov=app/controllers --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60",
-            "Ejecutando tests con análisis de cobertura"
+            "python -m pytest tests/controllers/ -v --override-ini addopts= --cov=app.controllers --cov-report=",
+            "Primera corrida: Controllers (generando datos de cobertura)"
+        ),
+        # SEGUNDA CORRIDA: Repositories acumulan cobertura + generan reportes finales
+        (
+            "python -m pytest tests/repositories/ -v --override-ini addopts= --cov=app.repositories --cov-append --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60",
+            "Segunda corrida: Repositories (acumulando cobertura + reportes finales)"
         ),
     ]
     
