@@ -22,7 +22,7 @@ def run_command(command, description):
 
 def main():
     print("🧪 Iniciando ejecución de pruebas unitarias")
-    print("📁 Proyecto: Back Minimercado - Controllers y Repositories")
+    print("📁 Proyecto: Back Minimercado - Controllers, Repositories y Services")
     
     # Verificar que pytest está instalado
     try:
@@ -33,17 +33,22 @@ def main():
         print("Ejecuta: pip install -r requirements.txt")
         sys.exit(1)
     
-    # Ejecutar tests con cobertura acumulada (solo controllers + repositories)
+    # Ejecutar tests con cobertura acumulada (controllers + repositories + services)
     commands = [
         # PRIMERA ejecución: Controllers generan datos de cobertura (sin reportes)
         (
             "python -m pytest tests/controllers/ -v --override-ini addopts= --cov=app.controllers --cov-report=",
             "Primera ejecución: Controllers (generando datos de cobertura)"
         ),
-        # SEGUNDA ejecución: Repositories acumulan cobertura + generan reportes finales
+        # SEGUNDA ejecución: Repositories acumulan cobertura (sin reportes)
         (
-            "python -m pytest tests/repositories/ -v --override-ini addopts= --cov=app.repositories --cov-append --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60",
-            "Segunda ejecución: Repositories (acumulando cobertura + reportes finales)"
+            "python -m pytest tests/repositories/ -v --override-ini addopts= --cov=app.repositories --cov-append --cov-report=",
+            "Segunda ejecución: Repositories (acumulando cobertura)"
+        ),
+        # TERCERA ejecución: Services acumulan cobertura + generan reportes finales
+        (
+            "python -m pytest tests/services/ -v --override-ini addopts= --cov=app.services --cov-append --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60",
+            "Tercera ejecución: Services (acumulando cobertura + reportes finales)"
         ),
     ]
     

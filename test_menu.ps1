@@ -23,10 +23,17 @@ Selecciona una opción:
 9. Ejecutar test_usuario_repository.py
 10. Ejecutar test_venta_repository.py
 
+# SERVICES - Tests de servicios
+11. Ejecutar todos los tests de Services
+12. Ejecutar test_auth_service.py
+13. Ejecutar test_caja_service.py
+14. Ejecutar test_inventario_service.py
+15. Ejecutar test_venta_service.py
+
 # UTILIDADES
-11. Ver reporte de cobertura HTML
-12. Instalar dependencias
-13. Limpiar archivos de cobertura
+16. Ver reporte de cobertura HTML
+17. Instalar dependencias
+18. Limpiar archivos de cobertura
 
 Opción
 "@
@@ -36,9 +43,11 @@ switch ($option) {
     "1" {
         Write-Host "`n🧪 Primera corrida: Controllers (generando datos de cobertura)..." -ForegroundColor Green
         python -m pytest tests/controllers/ -v --override-ini addopts= --cov=app.controllers --cov-report=
-        Write-Host "`n🧪 Segunda corrida: Repositories (acumulando cobertura + reportes finales)..." -ForegroundColor Green
-        python -m pytest tests/repositories/ -v --override-ini addopts= --cov=app.repositories --cov-append --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60
-        Write-Host "`n✅ Cobertura combinada generada (solo Controllers + Repositories)!" -ForegroundColor Green
+        Write-Host "`n🧪 Segunda corrida: Repositories (acumulando cobertura)..." -ForegroundColor Green
+        python -m pytest tests/repositories/ -v --override-ini addopts= --cov=app.repositories --cov-append --cov-report=
+        Write-Host "`n🧪 Tercera corrida: Services (acumulando cobertura + reportes finales)..." -ForegroundColor Green
+        python -m pytest tests/services/ -v --override-ini addopts= --cov=app.services --cov-append --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60
+        Write-Host "`n✅ Cobertura combinada generada (Controllers + Repositories + Services)!" -ForegroundColor Green
     }
     "2" {
         Write-Host "`n🧪 Ejecutando tests de AuthController..." -ForegroundColor Green
@@ -79,8 +88,30 @@ switch ($option) {
         python -m pytest tests/repositories/test_venta_repository.py -v
     }
     
-    # UTILIDADES
+    # SERVICES - Tests de servicios
     "11" {
+        Write-Host "`n🧪 Ejecutando TODOS los tests de Services con cobertura (solo Services)..." -ForegroundColor Green
+        python -m pytest tests/services/ -v --override-ini addopts= --cov=app.services --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60
+    }
+    "12" {
+        Write-Host "`n🧪 Ejecutando test_auth_service.py..." -ForegroundColor Green
+        python -m pytest tests/services/test_auth_service.py -v
+    }
+    "13" {
+        Write-Host "`n🧪 Ejecutando test_caja_service.py..." -ForegroundColor Green
+        python -m pytest tests/services/test_caja_service.py -v
+    }
+    "14" {
+        Write-Host "`n🧪 Ejecutando test_inventario_service.py..." -ForegroundColor Green
+        python -m pytest tests/services/test_inventario_service.py -v
+    }
+    "15" {
+        Write-Host "`n🧪 Ejecutando test_venta_service.py..." -ForegroundColor Green
+        python -m pytest tests/services/test_venta_service.py -v
+    }
+    
+    # UTILIDADES
+    "16" {
         Write-Host "`n📊 Abriendo reporte de cobertura..." -ForegroundColor Green
         if (Test-Path "htmlcov/index.html") {
             Start-Process "htmlcov/index.html"
@@ -88,11 +119,11 @@ switch ($option) {
             Write-Host "❌ No se encontró el reporte. Ejecuta primero los tests con cobertura." -ForegroundColor Red
         }
     }
-    "12" {
+    "17" {
         Write-Host "`n📦 Instalando dependencias..." -ForegroundColor Green
         pip install -r requirements.txt
     }
-    "13" {
+    "18" {
         Write-Host "`n🧹 Limpiando archivos de cobertura..." -ForegroundColor Green
         Remove-Item -Recurse -Force htmlcov -ErrorAction SilentlyContinue
         Remove-Item -Force .coverage -ErrorAction SilentlyContinue
