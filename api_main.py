@@ -10,6 +10,7 @@ from app.controllers.auth_controller import AuthController
 from app.controllers.inventario_controller import InventarioController
 from app.controllers.caja_controller import CajaController
 from app.controllers.venta_controller import VentaController
+from app.controllers.proveedor_controller import ProveedorController
 
 # Inicializar base de datos
 init_db()
@@ -17,7 +18,7 @@ init_db()
 # Crear aplicación FastAPI
 app = FastAPI(
     title="Sistema de Gestión de Minimercado",
-    description="API REST para gestión de inventario, ventas y caja",
+    description="API REST para gestión de inventario, ventas, caja y proveedores",
     version="1.0.0"
 )
 
@@ -42,6 +43,7 @@ class RegistrarUsuarioRequest(BaseModel):
     password: str
     rol: str
 
+# --- Modelos Producto ---
 class ProductoCreate(BaseModel):
     nombre: str
     precio: float
@@ -57,6 +59,18 @@ class ProductoUpdate(BaseModel):
 class AgregarStockRequest(BaseModel):
     cantidad: int
 
+# --- Modelos Proveedor ---
+class ProveedorCreate(BaseModel):
+    nombre: str
+    telefono: Optional[str] = None
+    direccion: Optional[str] = None
+
+class ProveedorUpdate(BaseModel):
+    nombre: str
+    telefono: Optional[str] = None
+    direccion: Optional[str] = None
+
+# --- Modelos Caja ---
 class AbrirCajaRequest(BaseModel):
     monto_inicial: float
     fk_usuario: int
@@ -64,6 +78,7 @@ class AbrirCajaRequest(BaseModel):
 class CerrarCajaRequest(BaseModel):
     monto_final: float
 
+# --- Modelos Venta ---
 class ItemVenta(BaseModel):
     producto_id: int
     cantidad: int
@@ -169,6 +184,57 @@ def obtener_alertas_stock():
         raise HTTPException(status_code=500, detail=resultado['message'])
     return resultado
 
+# ============= ENDPOINTS DE PROVEEDORES =============
+
+@app.post("/api/proveedores")
+def agregar_proveedor(proveedor: ProveedorCreate):
+    """Agregar un nuevo proveedor"""
+    resultado = ProveedorController.agregar_proveedor(
+        proveedor.nombre,
+        proveedor.telefono,
+        proveedor.direccion
+    )
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
+
+@app.get("/api/proveedores")
+def listar_proveedores():
+    """Listar todos los proveedores"""
+    resultado = ProveedorController.listar_proveedores()
+    if not resultado['success']:
+        raise HTTPException(status_code=500, detail=resultado['message'])
+    return resultado
+
+@app.get("/api/proveedores/{id}")
+def buscar_proveedor(id: int):
+    """Buscar un proveedor por ID"""
+    resultado = ProveedorController.buscar_proveedor(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=404, detail=resultado['message'])
+    return resultado
+
+@app.put("/api/proveedores/{id}")
+def actualizar_proveedor(id: int, proveedor: ProveedorUpdate):
+    """Actualizar un proveedor"""
+    resultado = ProveedorController.actualizar_proveedor(
+        id,
+        proveedor.nombre,
+        proveedor.telefono,
+        proveedor.direccion
+    )
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
+
+@app.delete("/api/proveedores/{id}")
+def eliminar_proveedor(id: int):
+    """Eliminar (desactivar) un proveedor"""
+    resultado = ProveedorController.eliminar_proveedor(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=404, detail=resultado['message'])
+    return resultado
+
 # ============= ENDPOINTS DE CAJA =============
 
 @app.post("/api/caja/abrir")
@@ -248,6 +314,7 @@ def root():
         "endpoints": {
             "auth": "/api/auth",
             "inventario": "/api/inventario",
+            "proveedores": "/api/proveedores",
             "caja": "/api/caja",
             "ventas": "/api/ventas",
             "docs": "/docs"
