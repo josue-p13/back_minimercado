@@ -35,15 +35,15 @@ def main():
     
     # Ejecutar tests con cobertura acumulada (solo controllers + repositories)
     commands = [
-        # PRIMERA CORRIDA: Controllers generan datos de cobertura (sin reportes)
+        # PRIMERA ejecución: Controllers generan datos de cobertura (sin reportes)
         (
             "python -m pytest tests/controllers/ -v --override-ini addopts= --cov=app.controllers --cov-report=",
-            "Primera corrida: Controllers (generando datos de cobertura)"
+            "Primera ejecución: Controllers (generando datos de cobertura)"
         ),
-        # SEGUNDA CORRIDA: Repositories acumulan cobertura + generan reportes finales
+        # SEGUNDA ejecución: Repositories acumulan cobertura + generan reportes finales
         (
             "python -m pytest tests/repositories/ -v --override-ini addopts= --cov=app.repositories --cov-append --cov-report=html --cov-report=term-missing --cov-report=xml --cov-fail-under=60",
-            "Segunda corrida: Repositories (acumulando cobertura + reportes finales)"
+            "Segunda ejecución: Repositories (acumulando cobertura + reportes finales)"
         ),
     ]
     
