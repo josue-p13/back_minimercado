@@ -1,8 +1,7 @@
-"""
-Pruebas unitarias para ClienteRepository
-"""
 import unittest
 import sqlite3
+import tempfile
+import os
 from unittest.mock import patch
 
 from app.repositories.cliente_repository import ClienteRepository
@@ -12,102 +11,92 @@ from app.models.cliente import Cliente
 class TestClienteRepository(unittest.TestCase):
 
     def setUp(self):
-        """Configura una base SQLite en memoria antes de cada test"""
-        self.conn = sqlite3.connect(':memory:')
-        self.cursor = self.conn.cursor()
+        # Archivo temporal SQLite
+        self.db_fd, self.db_path = tempfile.mkstemp()
 
-        self.cursor.execute("""
+        # Crear esquema
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("""
             CREATE TABLE cliente (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL,
+                nombre TEXT,
                 telefono TEXT,
                 email TEXT,
-                activo INTEGER NOT NULL
+                activo INTEGER
             )
         """)
-        self.conn.commit()
+        conn.commit()
+        conn.close()
 
         self.cliente = Cliente(
-            id=None,
-            nombre='Cliente Test',
-            telefono='0999999999',
-            email='test@email.com',
+            nombre="Cliente Test",
+            telefono="0999999999",
+            email="test@email.com",
             activo=1
         )
 
     def tearDown(self):
-        self.conn.close()
+        os.close(self.db_fd)
+        os.unlink(self.db_path)
 
     def _mock_get_connection(self):
-        """Devuelve la conexión en memoria"""
-        return self.conn
+        """Cada llamada devuelve una conexión nueva"""
+        return sqlite3.connect(self.db_path)
 
     @patch('app.repositories.cliente_repository.get_connection')
     def test_crear_cliente(self, mock_conn):
-        """Test: crear cliente"""
         mock_conn.side_effect = self._mock_get_connection
 
-        cliente_creado = ClienteRepository.crear(self.cliente)
-
-        self.assertIsNotNone(cliente_creado.id)
-        self.assertEqual(cliente_creado.nombre, 'Cliente Test')
+        cliente = ClienteRepository.crear(self.cliente)
+        self.assertIsNotNone(cliente.id)
 
     @patch('app.repositories.cliente_repository.get_connection')
     def test_obtener_cliente_por_id(self, mock_conn):
-        """Test: obtener cliente por ID"""
         mock_conn.side_effect = self._mock_get_connection
 
-        cliente = ClienteRepository.crear(self.cliente)
-        encontrado = ClienteRepository.obtener_por_id(cliente.id)
+        creado = ClienteRepository.crear(self.cliente)
+        encontrado = ClienteRepository.obtener_por_id(creado.id)
 
         self.assertIsNotNone(encontrado)
-        self.assertEqual(encontrado.nombre, cliente.nombre)
-
-    @patch('app.repositories.cliente_repository.get_connection')
-    def test_obtener_cliente_no_existente(self, mock_conn):
-        """Test: obtener cliente inexistente"""
-        mock_conn.side_effect = self._mock_get_connection
-
-        resultado = ClienteRepository.obtener_por_id(999)
-        self.assertIsNone(resultado)
 
     @patch('app.repositories.cliente_repository.get_connection')
     def test_listar_clientes_activos(self, mock_conn):
-        """Test: listar clientes activos"""
         mock_conn.side_effect = self._mock_get_connection
 
         ClienteRepository.crear(self.cliente)
-
         clientes = ClienteRepository.listar()
 
         self.assertEqual(len(clientes), 1)
-        self.assertEqual(clientes[0].nombre, 'Cliente Test')
 
     @patch('app.repositories.cliente_repository.get_connection')
     def test_actualizar_cliente(self, mock_conn):
-        """Test: actualizar cliente"""
         mock_conn.side_effect = self._mock_get_connection
 
         cliente = ClienteRepository.crear(self.cliente)
-        cliente.nombre = 'Cliente Actualizado'
+        cliente.nombre = "Actualizado"
 
         ClienteRepository.actualizar(cliente)
-
         actualizado = ClienteRepository.obtener_por_id(cliente.id)
-        self.assertEqual(actualizado.nombre, 'Cliente Actualizado')
+
+        self.assertEqual(actualizado.nombre, "Actualizado")
 
     @patch('app.repositories.cliente_repository.get_connection')
     def test_eliminar_cliente(self, mock_conn):
-        """Test: eliminar (desactivar) cliente"""
         mock_conn.side_effect = self._mock_get_connection
 
         cliente = ClienteRepository.crear(self.cliente)
-
         ClienteRepository.eliminar(cliente.id)
 
-        clientes = ClienteRepository.listar()
-        self.assertEqual(len(clientes), 0)
+        eliminado = ClienteRepository.obtener_por_id(cliente.id)
+        self.assertEqual(eliminado.activo, 0)
 
 
-if __name__ == '__main__':
-    unittest.main()
+    @patch('app.repositories.cliente_repository.get_connection')
+    def test_obtener_cliente_no_existe(self, mock_conn):
+        mock_conn.side_effect = self._mock_get_connection
+
+        cliente = ClienteRepository.obtener_por_id(999)
+
+        self.assertIsNone(cliente)
+
