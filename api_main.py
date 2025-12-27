@@ -11,6 +11,8 @@ from app.controllers.inventario_controller import InventarioController
 from app.controllers.caja_controller import CajaController
 from app.controllers.venta_controller import VentaController
 from app.controllers.proveedor_controller import ProveedorController
+from app.controllers.cliente_controller import ClienteController
+
 
 # Inicializar base de datos
 init_db()
@@ -87,6 +89,19 @@ class VentaRequest(BaseModel):
     items: List[ItemVenta]
     fk_cliente: Optional[int] = None
     fk_usuario: int
+
+# --- Modelos Cliente ---
+class ClienteCreate(BaseModel):
+    nombre: str
+    telefono: Optional[str] = None
+    email: Optional[str] = None
+
+
+class ClienteUpdate(BaseModel):
+    nombre: str
+    telefono: Optional[str] = None
+    email: Optional[str] = None
+
 
 # ============= ENDPOINTS DE AUTENTICACIÓN =============
 
@@ -302,6 +317,63 @@ def obtener_venta(id: int):
     if not resultado['success']:
         raise HTTPException(status_code=404, detail=resultado['message'])
     return resultado
+
+
+# ============= ENDPOINTS DE CLIENTES =============
+
+@app.post("/api/clientes")
+def agregar_cliente(cliente: ClienteCreate):
+    """Agregar un nuevo cliente"""
+    resultado = ClienteController.agregar_cliente(
+        cliente.nombre,
+        cliente.telefono,
+        cliente.email
+    )
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
+
+
+@app.get("/api/clientes")
+def listar_clientes():
+    """Listar todos los clientes"""
+    resultado = ClienteController.listar_clientes()
+    if not resultado['success']:
+        raise HTTPException(status_code=500, detail=resultado['message'])
+    return resultado
+
+
+@app.get("/api/clientes/{id}")
+def buscar_cliente(id: int):
+    """Buscar un cliente por ID"""
+    resultado = ClienteController.buscar_cliente(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=404, detail=resultado['message'])
+    return resultado
+
+
+@app.put("/api/clientes/{id}")
+def actualizar_cliente(id: int, cliente: ClienteUpdate):
+    """Actualizar un cliente"""
+    resultado = ClienteController.actualizar_cliente(
+        id,
+        cliente.nombre,
+        cliente.telefono,
+        cliente.email
+    )
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
+
+
+@app.delete("/api/clientes/{id}")
+def eliminar_cliente(id: int):
+    """Eliminar (desactivar) un cliente"""
+    resultado = ClienteController.eliminar_cliente(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=404, detail=resultado['message'])
+    return resultado
+
 
 # ============= ENDPOINT RAÍZ =============
 
