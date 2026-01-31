@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Productos</title>
+    <link rel="stylesheet" href="/static/css/productos/productos.css">
+</head>
+<body>
+
+<div class="main">
+
+    <div class="header">
+        <h1>Gestión de Productos</h1>
+        <a href="/admin" class="btn btn-primary">← Volver</a>
+    </div>
+
+    <div class="content">
+
+        <div class="table-container">
+            <h3>Registrar Nuevo Producto</h3>
+
+            <div class="form-group">
+                <label for="nombre">Nombre del producto *</label>
+                <input type="text" id="nombre" placeholder="Ej: Arroz 1kg">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="precio">Precio ($) *</label>
+                    <input type="number" id="precio" step="0.01" min="0" placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="stock">Stock Inicial *</label>
+                    <input type="number" id="stock" min="0" placeholder="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="stock_minimo">Stock Mínimo *</label>
+                    <input type="number" id="stock_minimo" min="1" placeholder="Ej: 5">
+                    <small style="color:#888; font-size: 0.8em">Alerta si baja de esto</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="proveedor">Proveedor (Opcional)</label>
+                <select id="proveedor">
+                    <option value="">-- Seleccione un proveedor --</option>
+                    </select>
+            </div>
+
+            <button class="btn btn-primary" onclick="registrarProducto()">
+                Guardar Producto
+            </button>
+
+            <p id="mensaje"></p>
+        </div>
+
+    </div>
+</div>
+
+<script src="/static/js/productos/productos.js"></script>
+</body>
+</html>

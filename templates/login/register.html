@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - Minimercado</title>
+    <link rel="stylesheet" href="/static/css/login/register.css">
+</head>
+<body>
+
+<div class="auth-container">
+    <h2>Registro de Usuario</h2>
+
+    <input type="text" id="nombre" placeholder="Nombre completo">
+    <input type="text" id="username" placeholder="Usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+
+    <select id="rol">
+        <option value="">Seleccione rol</option>
+        <option value="Admin">Admin</option>
+        <option value="Cajero">Cajero</option>
+        <option value="Auxiliar">Auxiliar</option>
+    </select>
+
+    <button onclick="registrar()">Registrarse</button>
+
+    <p id="mensaje"></p>
+
+    <a href="/login">Volver al login</a>
+</div>
+
+<script src="/static/js/login/register.js"></script>
+</body>
+</html>

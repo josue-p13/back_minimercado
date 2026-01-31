@@ -13,6 +13,14 @@ from app.controllers.venta_controller import VentaController
 from app.controllers.proveedor_controller import ProveedorController
 from app.controllers.cliente_controller import ClienteController
 
+# lo que se agrega para exponer al front las apis
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+
+
 
 # Inicializar base de datos
 init_db()
@@ -22,7 +30,16 @@ app = FastAPI(
     title="Sistema de Gestión de Minimercado",
     description="API REST para gestión de inventario, ventas, caja y proveedores",
     version="1.0.0"
+    
+    
 )
+
+# Archivos estáticos (CSS, JS, imágenes)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Templates HTML
+templates = Jinja2Templates(directory="templates")
+
 
 # Configurar CORS
 app.add_middleware(
@@ -392,6 +409,54 @@ def root():
             "docs": "/docs"
         }
     }
+
+# ============= ENDPOINTS DE PÁGINAS HTML =============
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("/login/login.html", {"request": request})
+
+@app.get("/register", response_class=HTMLResponse)
+def register_page(request: Request):
+    return templates.TemplateResponse("/login/register.html", {"request": request})
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin_page(request: Request):
+    return templates.TemplateResponse(
+        "roles/admin.html",
+        {"request": request}
+    )
+
+@app.get("/caja", response_class=HTMLResponse)
+def caja_page(request: Request):
+    return templates.TemplateResponse(
+        "roles/cajero.html",
+        {"request": request}
+    )
+
+@app.get("/auxiliar", response_class=HTMLResponse)
+def auxiliar_page(request: Request):
+    return templates.TemplateResponse(
+        "roles/auxiliar.html",
+        {"request": request}
+    )
+
+@app.get("/admin/productos", response_class=HTMLResponse)
+async def productos(request: Request):
+    return templates.TemplateResponse(
+        "productos/productos.html",
+        {"request": request}
+    )
+
+
+@app.get("/admin/proveedores", response_class=HTMLResponse)
+async def proveedores_page(request: Request):
+    return templates.TemplateResponse(
+        "proveedores/proveedores.html",
+        {"request": request}
+    )
+
+
+
 
 @app.get("/health")
 def health_check():

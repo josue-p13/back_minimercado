@@ -1,0 +1,131 @@
+/* ===============================
+   VARIABLES & RESET
+================================ */
+:root {
+    --primary-yellow: #FFD600;
+    --primary-hover: #E5C100;
+    --dark-bg: #1A1C20;
+    --white: #FFFFFF;
+    --text-main: #333333;
+    --input-bg: #F4F6F8;
+    --radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at center, #2C3036 0%, var(--dark-bg) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ===============================
+   TARJETA DE REGISTRO
+================================ */
+.auth-container {
+    background-color: var(--white);
+    width: 100%;
+    max-width: 450px; /* Un poco más ancho que el login */
+    padding: 40px;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-top: 4px solid var(--primary-yellow);
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem; /* Menos margen para que quepan los inputs */
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+/* ===============================
+   INPUTS Y SELECT
+================================ */
+.auth-container input, 
+.auth-container select {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 14px; /* Espacio compacto */
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    font-size: 15px;
+    transition: all 0.3s ease;
+    
+    /* Estilo para el select nativo */
+    appearance: none; 
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+/* Icono de flecha personalizado para el select */
+.auth-container select {
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.65em auto;
+}
+
+.auth-container input:focus,
+.auth-container select:focus {
+    outline: none;
+    background-color: var(--white);
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 4px rgba(255, 214, 0, 0.15);
+}
+
+/* ===============================
+   BOTÓN Y LINKS
+================================ */
+.auth-container button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    background-color: var(--primary-yellow);
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 214, 0, 0.25);
+}
+
+.auth-container button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+#mensaje {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+#mensaje.error { color: #D64545; }
+#mensaje.success { color: #2E7D32; }
+
+.auth-container a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.auth-container a:hover {
+    color: var(--primary-yellow); /* Cambio sutil en hover */
+    text-decoration: underline;
+}

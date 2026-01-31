@@ -1,0 +1,207 @@
+/* ===============================
+   1. VARIABLES & RESET GLOBAL
+================================ */
+:root {
+    /* Paleta de Colores */
+    --primary-yellow: #FFD600;      /* Amarillo vibrante */
+    --primary-hover: #E5C100;       /* Amarillo más oscuro para hover */
+    --dark-bg: #1A1C20;             /* Fondo oscuro (Sidebar) */
+    --light-bg: #F4F6F8;            /* Fondo claro (Body) */
+    --white: #FFFFFF;
+    --text-main: #333333;
+    --text-muted: #888888;
+    --danger: #FF4D4D;              /* Rojo suave para salir */
+    
+    /* Efectos */
+    --shadow-header: 0 2px 15px rgba(0, 0, 0, 0.05);
+    --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.04);
+    --radius: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Tipografía moderna */
+    background-color: var(--light-bg);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* ===============================
+   2. LAYOUT & HEADER
+================================ */
+.main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: var(--white);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-header);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-bg);
+    letter-spacing: -0.5px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* Botón de Menú con Estilo */
+.menu-btn {
+    background-color: var(--primary-yellow);
+    border: none;
+    color: var(--dark-bg);
+    font-size: 1.2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Botón circular */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(255, 214, 0, 0.3);
+}
+
+.menu-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px); /* Efecto de elevación */
+}
+
+/* ===============================
+   3. CONTENIDO (Card Style)
+================================ */
+.content {
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Hacemos que el contenido parezca una tarjeta flotante */
+.content h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--dark-bg);
+}
+
+.content p {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    border-left: 5px solid var(--primary-yellow); /* Detalle de acento */
+}
+
+/* ===============================
+   4. PANEL LATERAL (Sidebar)
+================================ */
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Oculto */
+    width: 300px;
+    height: 100%;
+    background-color: var(--dark-bg);
+    padding: 2rem;
+    transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Animación suave */
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+}
+
+.side-panel.open {
+    right: 0;
+}
+
+.side-panel h3 {
+    color: var(--primary-yellow);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.side-panel a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: #cfcfcf;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Efecto Hover en Enlaces */
+.side-panel a:hover {
+    background-color: rgba(255, 214, 0, 0.15); /* Amarillo transparente */
+    color: var(--primary-yellow);
+    padding-left: 20px; /* Pequeño desplazamiento a la derecha */
+}
+
+/* Botón de Logout */
+.side-panel .logout {
+    margin-top: auto; /* Empuja el botón al fondo */
+    background-color: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+    justify-content: center;
+    border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+.side-panel .logout:hover {
+    background-color: var(--danger);
+    color: var(--white);
+}
+
+/* ===============================
+   5. OVERLAY (Fondo borroso)
+================================ */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Más oscuro */
+    backdrop-filter: blur(3px); /* Efecto vidrio esmerilado */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 900;
+}
+
+.overlay.show {
+    opacity: 1;
+    visibility: visible;
+}

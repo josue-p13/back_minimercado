@@ -1,0 +1,135 @@
+/* ===============================
+   VARIABLES & RESET (Coherencia con Admin)
+================================ */
+:root {
+    --primary-yellow: #FFD600;
+    --primary-hover: #E5C100;
+    --dark-bg: #1A1C20; 
+    --white: #FFFFFF;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --input-bg: #F4F6F8;
+    --radius: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ===============================
+   LAYOUT PRINCIPAL
+================================ */
+body {
+    /* Fondo oscuro con un sutil degradado central para profundidad */
+    background: radial-gradient(circle at center, #2C3036 0%, var(--dark-bg) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ===============================
+   TARJETA DE LOGIN
+================================ */
+.auth-container {
+    background-color: var(--white);
+    width: 100%;
+    max-width: 400px; /* Ancho controlado */
+    padding: 40px;
+    border-radius: var(--radius);
+    /* Sombra suave y elevada */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    border-top: 4px solid var(--primary-yellow); /* Detalle de marca */
+}
+
+.auth-container h2 {
+    margin-bottom: 2rem;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+/* ===============================
+   FORMULARIO & INPUTS
+================================ */
+.auth-container input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.auth-container input:focus {
+    outline: none;
+    background-color: var(--white);
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 4px rgba(255, 214, 0, 0.15); /* Glow amarillo suave */
+}
+
+/* Placeholder styling */
+.auth-container input::placeholder {
+    color: #AAA;
+}
+
+/* ===============================
+   BOTONES
+================================ */
+.auth-container button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background-color: var(--primary-yellow);
+    color: #1a1a1a; /* Texto oscuro para contraste */
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 214, 0, 0.25);
+}
+
+.auth-container button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px); /* Pequeña elevación */
+}
+
+.auth-container button:active {
+    transform: translateY(0);
+}
+
+/* ===============================
+   MENSAJES & LINKS
+================================ */
+#mensaje {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    min-height: 20px; /* Evita saltos si está vacío */
+}
+
+#mensaje.error { color: #D64545; }
+#mensaje.success { color: #2E7D32; }
+
+.auth-container a {
+    display: inline-block;
+    margin-top: 25px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.auth-container a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
