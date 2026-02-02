@@ -12,6 +12,7 @@ from app.controllers.caja_controller import CajaController
 from app.controllers.venta_controller import VentaController
 from app.controllers.proveedor_controller import ProveedorController
 from app.controllers.cliente_controller import ClienteController
+from app.controllers.usuario_controller import UsuarioController
 
 # lo que se agrega para exponer al front las apis
 
@@ -60,6 +61,19 @@ class RegistrarUsuarioRequest(BaseModel):
     nombre: str
     username: str
     password: str
+    rol: str
+
+# --- Modelos Gestión de Usuarios ---
+class UsuarioCreateRequest(BaseModel):
+    nombre: str
+    username: str
+    password: str
+    rol: str
+
+class UsuarioUpdateRequest(BaseModel):
+    nombre: str
+    username: str
+    password: Optional[str] = None # Opcional, si no se envía no se cambia
     rol: str
 
 # --- Modelos Producto ---
@@ -153,6 +167,52 @@ def validar_token(authorization: Optional[str] = Header(None)):
     resultado = AuthController.validar_token(token)
     if not resultado['success']:
         raise HTTPException(status_code=401, detail=resultado['message'])
+    return resultado
+
+# ============= ENDPOINTS DE GESTIÓN DE USUARIOS (ADMIN) =============
+
+@app.get("/api/usuarios")
+def listar_usuarios():
+    """Listar todos los usuarios"""
+    resultado = UsuarioController.listar_usuarios()
+    if not resultado['success']:
+        raise HTTPException(status_code=500, detail=resultado['message'])
+    return resultado
+
+@app.post("/api/usuarios")
+def crear_usuario_admin(usuario: UsuarioCreateRequest):
+    """Crear usuario desde panel admin"""
+    resultado = UsuarioController.agregar_usuario(
+        usuario.nombre, usuario.username, usuario.password, usuario.rol
+    )
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
+
+@app.get("/api/usuarios/{id}")
+def buscar_usuario(id: int):
+    """Obtener un usuario por ID"""
+    resultado = UsuarioController.buscar_usuario(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=404, detail=resultado['message'])
+    return resultado
+
+@app.put("/api/usuarios/{id}")
+def actualizar_usuario(id: int, usuario: UsuarioUpdateRequest):
+    """Actualizar usuario"""
+    resultado = UsuarioController.actualizar_usuario(
+        id, usuario.nombre, usuario.username, usuario.password, usuario.rol
+    )
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
+
+@app.delete("/api/usuarios/{id}")
+def eliminar_usuario(id: int):
+    """Eliminar usuario"""
+    resultado = UsuarioController.eliminar_usuario(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
     return resultado
 
 # ============= ENDPOINTS DE INVENTARIO =============
@@ -419,6 +479,13 @@ def login_page(request: Request):
 def register_page(request: Request):
     return templates.TemplateResponse("/login/register.html", {"request": request})
 
+@app.get("/admin/usuarios", response_class=HTMLResponse)
+async def gestion_usuarios_page(request: Request):
+    return templates.TemplateResponse(
+        "usuarios/admin_usuarios.html", # Asegúrate de crear este HTML
+        {"request": request}
+    )
+
 @app.get("/admin", response_class=HTMLResponse)
 def admin_page(request: Request):
     return templates.TemplateResponse(
@@ -455,7 +522,12 @@ async def proveedores_page(request: Request):
         {"request": request}
     )
 
-
+@app.get("/admin/clientes", response_class=HTMLResponse)
+async def clientes_page(request: Request):
+    return templates.TemplateResponse(
+        "clientes/clientes.html", 
+        {"request": request}
+    )
 
 
 @app.get("/health")
@@ -465,5 +537,6 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
     print("Para acceder a swagger, visitar http://localhost:8000/docs")
+    print("Para acceder a login, visitar http://localhost:8000/login")
+    uvicorn.run(app, host="localhost", port=8000)

@@ -1,6 +1,6 @@
 """
 Repositorio de Usuarios
-Operaciones CRUD básicas
+Gestiona las operaciones CRUD para la entidad Usuario
 """
 from app.database.connection import get_connection
 from app.models.usuario import Usuario
@@ -9,17 +9,22 @@ class UsuarioRepository:
     
     @staticmethod
     def crear(usuario):
-        """Crea un nuevo usuario"""
+        """Crea un nuevo usuario en la base de datos"""
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO usuario (nombre, username, password_hash, rol, activo)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (usuario.nombre, usuario.username, usuario.password_hash, usuario.rol, usuario.activo))
-        conn.commit()
-        usuario.id = cursor.lastrowid
-        conn.close()
-        return usuario
+        try:
+            cursor.execute('''
+                INSERT INTO usuario (nombre, username, password_hash, rol, activo)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (usuario.nombre, usuario.username, usuario.password_hash, usuario.rol, usuario.activo))
+            conn.commit()
+            usuario.id = cursor.lastrowid
+            return usuario
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            conn.close()
     
     @staticmethod
     def obtener_por_id(id):
@@ -30,19 +35,20 @@ class UsuarioRepository:
         row = cursor.fetchone()
         conn.close()
         if row:
-            return Usuario(row[0], row[1], row[2], row[3], row[4], row[5])
+            # id, nombre, username, password_hash, rol, activo
+            return Usuario(id=row[0], nombre=row[1], username=row[2], password_hash=row[3], rol=row[4], activo=row[5])
         return None
-    
+
     @staticmethod
     def obtener_por_username(username):
-        """Obtiene un usuario por username"""
+        """Obtiene un usuario por Username (para validaciones)"""
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM usuario WHERE username = ?', (username,))
+        cursor.execute('SELECT * FROM usuario WHERE username = ? AND activo = 1', (username,))
         row = cursor.fetchone()
         conn.close()
         if row:
-            return Usuario(row[0], row[1], row[2], row[3], row[4], row[5])
+            return Usuario(id=row[0], nombre=row[1], username=row[2], password_hash=row[3], rol=row[4], activo=row[5])
         return None
     
     @staticmethod
@@ -53,23 +59,35 @@ class UsuarioRepository:
         cursor.execute('SELECT * FROM usuario WHERE activo = 1')
         rows = cursor.fetchall()
         conn.close()
-        return [Usuario(r[0], r[1], r[2], r[3], r[4], r[5]) for r in rows]
+        return [Usuario(id=r[0], nombre=r[1], username=r[2], password_hash=r[3], rol=r[4], activo=r[5]) for r in rows]
     
     @staticmethod
     def actualizar(usuario):
-        """Actualiza un usuario"""
+        """Actualiza la información de un usuario"""
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute('''
-            UPDATE usuario SET nombre = ?, rol = ?, activo = ?
-            WHERE id = ?
-        ''', (usuario.nombre, usuario.rol, usuario.activo, usuario.id))
+        
+        # Si el hash es None, no actualizamos la contraseña
+        if usuario.password_hash:
+            query = '''
+                UPDATE usuario SET nombre = ?, username = ?, password_hash = ?, rol = ?
+                WHERE id = ?
+            '''
+            params = (usuario.nombre, usuario.username, usuario.password_hash, usuario.rol, usuario.id)
+        else:
+            query = '''
+                UPDATE usuario SET nombre = ?, username = ?, rol = ?
+                WHERE id = ?
+            '''
+            params = (usuario.nombre, usuario.username, usuario.rol, usuario.id)
+
+        cursor.execute(query, params)
         conn.commit()
         conn.close()
     
     @staticmethod
     def eliminar(id):
-        """Elimina (desactiva) un usuario"""
+        """Elimina (desactiva) un usuario (Soft Delete)"""
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute('UPDATE usuario SET activo = 0 WHERE id = ?', (id,))

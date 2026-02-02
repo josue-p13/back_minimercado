@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Clientes</title>
+    <link rel="stylesheet" href="/static/css/proveedores/proveedores.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="main">
+        <div class="header">
+            <h1>Gestión de Clientes</h1>
+            <a href="javascript:history.back()" class="btn btn-secondary">← Volver</a>
+        </div>
+
+        <div class="content">
+            <div class="card form-card">
+                <h3>Registrar Cliente</h3>
+                <p class="subtitle">Datos para facturación.</p>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre / Razón Social</label>
+                    <input type="text" id="nombre" placeholder="Ej: Consumidor Final">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" placeholder="Ej: 0991234567">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" placeholder="cliente@email.com">
+                </div>
+
+                <button class="btn btn-primary" onclick="registrarCliente()">
+                    <i class="fas fa-user-check"></i> Guardar Cliente
+                </button>
+                <p id="mensaje"></p>
+            </div>
+
+            <div class="card list-card">
+                <h3>Cartera de Clientes</h3>
+                <div class="table-responsive">
+                    <table id="tablaClientes">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/clientes/clientes.js"></script>
+</body>
+
+</html>
