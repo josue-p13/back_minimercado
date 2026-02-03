@@ -24,6 +24,12 @@
                 <p class="subtitle">Gestiona el inventario del minimercado.</p>
 
                 <input type="hidden" id="producto_id">
+
+                <div class="form-group">
+                    <label for="codigo_barras">Código de Barras</label>
+                    <input type="text" id="codigo_barras" placeholder="Escanea o escribe el código (Ej: 78610...)">
+                </div>
+
                 <div class="form-group">
                     <label for="nombre">Nombre del producto *</label>
                     <input type="text" id="nombre" placeholder="Ej: Arroz 1kg">
@@ -71,10 +77,11 @@
                     <table id="tablaProductos">
                         <thead>
                             <tr>
+                                <th>Código</th>
                                 <th>Producto</th>
                                 <th>Precio</th>
                                 <th>Stock</th>
-                                <th>Stock Min</th>
+                                <th>Min</th>
                                 <th>Proveedor</th>
                                 <th>Acciones</th>
                             </tr>

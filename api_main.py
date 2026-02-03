@@ -14,13 +14,10 @@ from app.controllers.proveedor_controller import ProveedorController
 from app.controllers.cliente_controller import ClienteController
 from app.controllers.usuario_controller import UsuarioController
 
-# lo que se agrega para exponer al front las apis
-
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
-
 
 
 # Inicializar base de datos
@@ -83,13 +80,15 @@ class ProductoCreate(BaseModel):
     stock: int
     stock_minimo: int
     fk_proveedor: Optional[int] = None
+    codigo_barras: Optional[str] = None
 
 class ProductoUpdate(BaseModel):
     nombre: str
     precio: float
-    stock: int  # <--- NUEVO
+    stock: int
     stock_minimo: int
-    fk_proveedor: Optional[int] = None # <--- NUEVO
+    fk_proveedor: Optional[int] = None
+    codigo_barras: Optional[str] = None
 
 class AgregarStockRequest(BaseModel):
     cantidad: int
@@ -227,7 +226,8 @@ def agregar_producto(producto: ProductoCreate):
         producto.precio,
         producto.stock,
         producto.stock_minimo,
-        producto.fk_proveedor
+        producto.fk_proveedor,
+        producto.codigo_barras
     )
     if not resultado['success']:
         raise HTTPException(status_code=400, detail=resultado['message'])
@@ -256,9 +256,10 @@ def actualizar_producto(id: int, producto: ProductoUpdate):
         id,
         producto.nombre,
         producto.precio,
-        producto.stock,        # <--- AGREGADO
+        producto.stock,
         producto.stock_minimo,
-        producto.fk_proveedor  # <--- AGREGADO
+        producto.fk_proveedor,
+        producto.codigo_barras
     )
     if not resultado['success']:
         raise HTTPException(status_code=400, detail=resultado['message'])
@@ -492,7 +493,7 @@ def register_page(request: Request):
 @app.get("/admin/usuarios", response_class=HTMLResponse)
 async def gestion_usuarios_page(request: Request):
     return templates.TemplateResponse(
-        "usuarios/admin_usuarios.html", # Asegúrate de crear este HTML
+        "usuarios/admin_usuarios.html",
         {"request": request}
     )
 

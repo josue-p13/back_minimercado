@@ -9,34 +9,31 @@ from app.models.producto import Producto
 class InventarioService:
     
     @staticmethod
-    def agregar_producto(nombre, precio, stock, stock_minimo, fk_proveedor):
-        """Agrega un nuevo producto al inventario"""
-        if precio < 0:
-            raise Exception("El precio no puede ser negativo")
-        if stock < 0:
-            raise Exception("El stock no puede ser negativo")
+    def agregar_producto(nombre, precio, stock, stock_minimo, fk_proveedor, codigo_barras): # <--- Parametro nuevo
+        if precio < 0: raise Exception("El precio no puede ser negativo")
+        if stock < 0: raise Exception("El stock no puede ser negativo")
         
         producto = Producto(
             nombre=nombre,
             precio=precio,
             stock=stock,
             stock_minimo=stock_minimo,
-            fk_proveedor=fk_proveedor
+            fk_proveedor=fk_proveedor,
+            codigo_barras=codigo_barras
         )
         return ProductoRepository.crear(producto)
     
     @staticmethod
-    def actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor):
-        """Actualiza la información de un producto"""
+    def actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor, codigo_barras): # <--- Parametro nuevo
         producto = ProductoRepository.obtener_por_id(id)
-        if not producto:
-            raise Exception("Producto no encontrado")
+        if not producto: raise Exception("Producto no encontrado")
         
         producto.nombre = nombre
         producto.precio = precio
-        producto.stock = stock              # <--- Actualizamos Stock
+        producto.stock = stock
         producto.stock_minimo = stock_minimo
-        producto.fk_proveedor = fk_proveedor # <--- Actualizamos Proveedor
+        producto.fk_proveedor = fk_proveedor
+        producto.codigo_barras = codigo_barras
         
         ProductoRepository.actualizar(producto)
         return producto

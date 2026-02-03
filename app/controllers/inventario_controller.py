@@ -7,32 +7,20 @@ from app.services.inventario_service import InventarioService
 class InventarioController:
     
     @staticmethod
-    def agregar_producto(nombre, precio, stock, stock_minimo, fk_proveedor):
-        """Agrega un nuevo producto"""
+    def agregar_producto(nombre, precio, stock, stock_minimo, fk_proveedor, codigo_barras): # <---
         try:
-            producto = InventarioService.agregar_producto(nombre, precio, stock, stock_minimo, fk_proveedor)
-            return {
-                'success': True,
-                'message': 'Producto agregado exitosamente',
-                'producto': producto.to_dict()
-            }
+            # Pasamos codigo_barras
+            producto = InventarioService.agregar_producto(nombre, precio, stock, stock_minimo, fk_proveedor, codigo_barras)
+            return {'success': True, 'message': 'Producto agregado', 'producto': producto.to_dict()}
         except Exception as e:
-            return {
-                'success': False,
-                'message': str(e)
-            }
+            return {'success': False, 'message': str(e)}
     
     @staticmethod
-    def actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor):
-        """Actualiza un producto"""
+    def actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor, codigo_barras): # <---
         try:
-            # Pasamos todos los datos al servicio
-            producto = InventarioService.actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor)
-            return {
-                'success': True,
-                'message': 'Producto actualizado exitosamente',
-                'producto': producto.to_dict()
-            }
+            # Pasamos codigo_barras
+            producto = InventarioService.actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor, codigo_barras)
+            return {'success': True, 'message': 'Producto actualizado', 'producto': producto.to_dict()}
         except Exception as e:
             return {'success': False, 'message': str(e)}
     

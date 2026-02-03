@@ -47,6 +47,7 @@ def init_db():
             stock INTEGER DEFAULT 0,
             stock_minimo INTEGER DEFAULT 5,
             fk_proveedor INTEGER,
+            codigo_barras TEXT,
             activo INTEGER DEFAULT 1,
             FOREIGN KEY (fk_proveedor) REFERENCES proveedor(id)
         )
