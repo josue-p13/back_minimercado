@@ -1,3 +1,23 @@
+// Agregamos los escuchadores de eventos para la tecla ENTER
+document.addEventListener("DOMContentLoaded", () => {
+    // Permitir Enter en el campo de contraseña
+    document.getElementById("password").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Evitar comportamientos por defecto
+            login(); // Ejecutar la función de login
+        }
+    });
+
+    // Opcional: Permitir Enter también en el campo usuario
+    document.getElementById("username").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            // Si da enter en usuario, pasamos el foco a la contraseña
+            document.getElementById("password").focus();
+        }
+    });
+});
+
 async function login() {
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();

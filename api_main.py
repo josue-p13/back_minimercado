@@ -529,6 +529,18 @@ async def clientes_page(request: Request):
         {"request": request}
     )
 
+@app.get("/ventas/nuevo", response_class=HTMLResponse)
+async def pos_page(request: Request):
+    return templates.TemplateResponse(
+        "ventas/pos.html", 
+        {"request": request}
+    )
+@app.get("/admin/ventas", response_class=HTMLResponse)
+async def historial_page(request: Request):
+    return templates.TemplateResponse(
+        "ventas/historial.html", 
+        {"request": request}
+    )
 
 @app.get("/health")
 def health_check():

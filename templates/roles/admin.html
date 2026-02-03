@@ -74,7 +74,6 @@
         <div class="header">
             <h1>Panel Administrador</h1>
             <div class="header-right">
-                <a href="/" class="header-link">🏠 Inicio</a>
                 <span class="user">Rol: Admin</span>
                 <button class="menu-btn" onclick="togglePanel()">☰</button>
             </div>
@@ -164,6 +163,24 @@
                         <a href="/admin/clientes" class="header-link" style="font-size:0.8rem">Gestionar →</a>
                     </div>
                 </div>
+                <div class="card">
+                    <h3>💰 Ventas Recientes</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Total</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-ventas-resumen">
+                            <tr><td colspan="3">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top:15px; text-align:right;">
+                        <a href="/admin/ventas" class="header-link" style="font-size:0.8rem">Ver historial completo →</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -174,6 +191,7 @@
         <a href="/admin/productos">📦 Gestión de Productos</a>
         <a href="/admin/proveedores">🚚 Gestión de Proveedores</a>
         <a href="/admin/clientes">👥 Gestión de Clientes</a>
+        <a href="/admin/ventas">💰 Historial de Ventas</a>
         <a href="/login" class="logout">Cerrar sesión</a>
     </div>
 

@@ -4,11 +4,10 @@ Lógica de negocio para usuarios
 """
 from app.repositories.usuario_repository import UsuarioRepository
 from app.models.usuario import Usuario
-# CAMBIO: Usamos passlib que ya lo tienes en requirements.txt
 from passlib.context import CryptContext
 
-# Configuración básica de hashing (seguramente tienes algo similar en tu AuthController)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# CAMBIO IMPORTANTE: Usamos 'pbkdf2_sha256' que no da conflictos de versión
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 class UsuarioService:
     
@@ -17,7 +16,7 @@ class UsuarioService:
         if UsuarioRepository.obtener_por_username(username):
             raise Exception("El nombre de usuario ya existe")
             
-        # CAMBIO: Usamos pwd_context.hash en lugar de generate_password_hash
+        # Hashing seguro sin errores de bcrypt
         password_hash = pwd_context.hash(password)
         
         nuevo_usuario = Usuario(nombre=nombre, username=username, password_hash=password_hash, rol=rol)
@@ -49,11 +48,11 @@ class UsuarioService:
         
         # Solo actualizamos password si se envía uno nuevo
         if password:
-            # CAMBIO: Usamos pwd_context.hash
             usuario_actual.password_hash = pwd_context.hash(password)
-        else:
-            usuario_actual.password_hash = None
             
+        # Nota: Si el usuario_actual.password_hash es None, el repositorio sabrá qué hacer
+        # (asegúrate que tu repositorio maneje el caso de no actualizar pass si no cambia)
+        
         UsuarioRepository.actualizar(usuario_actual)
         return usuario_actual
     

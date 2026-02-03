@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarResumenProveedores();
     cargarResumenUsuarios();
     cargarResumenClientes();
+    cargarResumenVentas();
 });
 
 // ==========================================
@@ -189,5 +190,50 @@ async function cargarResumenClientes() {
     } catch (error) {
         console.error("Error clientes:", error);
         tbody.innerHTML = "<tr><td colspan='2'>Error de conexión.</td></tr>";
+    }
+}
+// ==========================================
+// 5. CARGAR VENTAS RECIENTES (NUEVO)
+// ==========================================
+async function cargarResumenVentas() {
+    const tbody = document.getElementById("tabla-ventas-resumen");
+
+    try {
+        const response = await fetch("/api/ventas");
+        const resultado = await response.json();
+
+        if (response.ok && resultado.success) {
+            const lista = resultado.ventas || [];
+            tbody.innerHTML = "";
+
+            if (lista.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='3'>Sin ventas registradas.</td></tr>";
+                return;
+            }
+
+            // APLICAMOS EL LÍMITE: Solo las 5 más recientes
+            const vistaPrevia = lista.slice(0, 5);
+
+            vistaPrevia.forEach(v => {
+                // Formateamos la fecha para que se vea corta (solo hora si es hoy, o fecha corta)
+                const fechaObj = new Date(v.fecha);
+                const fechaCorta = fechaObj.toLocaleDateString() + ' ' + fechaObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>#${v.id}</td>
+                    <td style="color:#2E7D32; font-weight:bold;">$${v.total.toFixed(2)}</td>
+                    <td style="font-size:0.85em; color:#666;">${fechaCorta}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        } else {
+            tbody.innerHTML = "<tr><td colspan='3'>Error al cargar.</td></tr>";
+        }
+
+    } catch (error) {
+        console.error("Error ventas:", error);
+        tbody.innerHTML = "<tr><td colspan='3'>Error de conexión.</td></tr>";
     }
 }
