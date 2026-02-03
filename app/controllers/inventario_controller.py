@@ -23,20 +23,18 @@ class InventarioController:
             }
     
     @staticmethod
-    def actualizar_producto(id, nombre, precio, stock_minimo):
+    def actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor):
         """Actualiza un producto"""
         try:
-            producto = InventarioService.actualizar_producto(id, nombre, precio, stock_minimo)
+            # Pasamos todos los datos al servicio
+            producto = InventarioService.actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor)
             return {
                 'success': True,
                 'message': 'Producto actualizado exitosamente',
                 'producto': producto.to_dict()
             }
         except Exception as e:
-            return {
-                'success': False,
-                'message': str(e)
-            }
+            return {'success': False, 'message': str(e)}
     
     @staticmethod
     def agregar_stock(id_producto, cantidad):
@@ -102,3 +100,10 @@ class InventarioController:
                 'success': False,
                 'message': str(e)
             }
+    @staticmethod
+    def eliminar_producto(id):
+        try:
+            InventarioService.eliminar_producto(id)
+            return {'success': True, 'message': 'Producto eliminado correctamente'}
+        except Exception as e:
+            return {'success': False, 'message': str(e)}

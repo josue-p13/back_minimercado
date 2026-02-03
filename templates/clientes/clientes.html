@@ -18,8 +18,10 @@
 
         <div class="content">
             <div class="card form-card">
-                <h3>Registrar Cliente</h3>
+                <h3 id="form-title">Registrar Cliente</h3>
                 <p class="subtitle">Datos para facturación.</p>
+
+                <input type="hidden" id="cliente_id">
 
                 <div class="form-group">
                     <label for="nombre">Nombre / Razón Social</label>
@@ -36,9 +38,15 @@
                     <input type="email" id="email" placeholder="cliente@email.com">
                 </div>
 
-                <button class="btn btn-primary" onclick="registrarCliente()">
-                    <i class="fas fa-user-check"></i> Guardar Cliente
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="btn-guardar" onclick="guardarCliente()">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button class="btn btn-secondary" id="btn-cancelar" onclick="limpiarFormulario()"
+                        style="display: none;">
+                        Cancelar
+                    </button>
+                </div>
                 <p id="mensaje"></p>
             </div>
 
@@ -48,7 +56,6 @@
                     <table id="tablaClientes">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Teléfono</th>
                                 <th>Email</th>

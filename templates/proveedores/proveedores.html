@@ -1,70 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Proveedores</title>
     <link rel="stylesheet" href="/static/css/proveedores/proveedores.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
 
-<div class="main">
-
-    <div class="header">
-        <h1>Gestión de Proveedores</h1>
-        <a href="/admin" class="btn btn-secondary">← Volver al Panel</a>
-    </div>
-
-    <div class="content">
-
-        <div class="card form-card">
-            <h3>Registrar Nuevo Proveedor</h3>
-            <p class="subtitle">Ingresa los datos del proveedor para el inventario.</p>
-
-            <div class="form-group">
-                <label for="nombre">Nombre de la Empresa</label>
-                <input type="text" id="nombre" placeholder="Ej: Distribuidora Sol">
-            </div>
-
-            <div class="form-group">
-                <label for="telefono">Teléfono</label>
-                <input type="text" id="telefono" placeholder="Ej: 0991234567">
-            </div>
-
-            <div class="form-group">
-                <label for="direccion">Dirección</label>
-                <input type="text" id="direccion" placeholder="Ej: Av. Amazonas y Colon">
-            </div>
-
-            <button class="btn btn-primary" onclick="registrarProveedor()">
-                <i class="fas fa-save"></i> Guardar Proveedor
-            </button>
-
-            <p id="mensaje"></p>
+    <div class="main">
+        <div class="header">
+            <h1>Gestión de Proveedores</h1>
+            <a href="/admin" class="btn btn-secondary">← Volver al Panel</a>
         </div>
 
-        <div class="card list-card">
-            <h3>Proveedores Registrados</h3>
-            <div class="table-responsive">
-                <table id="tablaProveedores">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Teléfono</th>
-                            <th>Dirección</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
+        <div class="content">
+
+            <div class="card form-card">
+                <h3 id="form-title">Registrar Proveedor</h3>
+                <p class="subtitle">Ingresa los datos del proveedor.</p>
+
+                <input type="hidden" id="proveedor_id">
+
+                <div class="form-group">
+                    <label for="nombre">Nombre de la Empresa</label>
+                    <input type="text" id="nombre" placeholder="Ej: Distribuidora Sol">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" id="telefono" placeholder="Ej: 0991234567">
+                </div>
+
+                <div class="form-group">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" id="direccion" placeholder="Ej: Av. Amazonas y Colon">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="btn-guardar" onclick="guardarProveedor()">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button class="btn btn-secondary" id="btn-cancelar" onclick="limpiarFormulario()"
+                        style="display: none;">
+                        Cancelar
+                    </button>
+                </div>
+
+                <p id="mensaje"></p>
+            </div>
+
+            <div class="card list-card">
+                <h3>Proveedores Registrados</h3>
+                <div class="table-responsive">
+                    <table id="tablaProveedores">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
     </div>
-</div>
 
-<script src="/static/js/proveedores/proveedores.js"></script>
+    <script src="/static/js/proveedores/proveedores.js"></script>
 </body>
+
 </html>

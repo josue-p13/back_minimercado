@@ -58,10 +58,22 @@ class ProductoRepository:
         conn = get_connection()
         cursor = conn.cursor()
         try:
+            # Agregamos stock y fk_proveedor a la sentencia SQL
             cursor.execute('''
-                UPDATE producto SET nombre = ?, precio = ?, stock_minimo = ?
+                UPDATE producto 
+                SET nombre = ?, precio = ?, stock = ?, stock_minimo = ?, fk_proveedor = ?
                 WHERE id = ?
-            ''', (producto.nombre, producto.precio, producto.stock_minimo, producto.id))
+            ''', (producto.nombre, producto.precio, producto.stock, producto.stock_minimo, producto.fk_proveedor, producto.id))
+            conn.commit()
+        finally:
+            conn.close()
+    @staticmethod
+    def eliminar(id):
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            # Soft delete: cambiamos activo a 0
+            cursor.execute('UPDATE producto SET activo = 0 WHERE id = ?', (id,))
             conn.commit()
         finally:
             conn.close()

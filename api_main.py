@@ -87,7 +87,9 @@ class ProductoCreate(BaseModel):
 class ProductoUpdate(BaseModel):
     nombre: str
     precio: float
+    stock: int  # <--- NUEVO
     stock_minimo: int
+    fk_proveedor: Optional[int] = None # <--- NUEVO
 
 class AgregarStockRequest(BaseModel):
     cantidad: int
@@ -254,12 +256,20 @@ def actualizar_producto(id: int, producto: ProductoUpdate):
         id,
         producto.nombre,
         producto.precio,
-        producto.stock_minimo
+        producto.stock,        # <--- AGREGADO
+        producto.stock_minimo,
+        producto.fk_proveedor  # <--- AGREGADO
     )
     if not resultado['success']:
         raise HTTPException(status_code=400, detail=resultado['message'])
     return resultado
-
+@app.delete("/api/inventario/productos/{id}")
+def eliminar_producto(id: int):
+    """Eliminar un producto"""
+    resultado = InventarioController.eliminar_producto(id)
+    if not resultado['success']:
+        raise HTTPException(status_code=400, detail=resultado['message'])
+    return resultado
 @app.post("/api/inventario/productos/{id}/stock")
 def agregar_stock(id: int, request: AgregarStockRequest):
     """Agregar stock a un producto (RF10)"""

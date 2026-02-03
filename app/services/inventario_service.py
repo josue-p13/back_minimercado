@@ -26,7 +26,7 @@ class InventarioService:
         return ProductoRepository.crear(producto)
     
     @staticmethod
-    def actualizar_producto(id, nombre, precio, stock_minimo):
+    def actualizar_producto(id, nombre, precio, stock, stock_minimo, fk_proveedor):
         """Actualiza la información de un producto"""
         producto = ProductoRepository.obtener_por_id(id)
         if not producto:
@@ -34,7 +34,10 @@ class InventarioService:
         
         producto.nombre = nombre
         producto.precio = precio
+        producto.stock = stock              # <--- Actualizamos Stock
         producto.stock_minimo = stock_minimo
+        producto.fk_proveedor = fk_proveedor # <--- Actualizamos Proveedor
+        
         ProductoRepository.actualizar(producto)
         return producto
     
@@ -71,3 +74,8 @@ class InventarioService:
         if producto:
             return producto.to_dict()
         return None
+    @staticmethod
+    def eliminar_producto(id):
+        if not ProductoRepository.obtener_por_id(id):
+            raise Exception("Producto no encontrado")
+        ProductoRepository.eliminar(id)
