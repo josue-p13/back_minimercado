@@ -1,68 +1,67 @@
-"""
-Repositorio de Caja
-RF20, RF21 - Control de caja
-"""
 from app.database.connection import get_connection
 from app.models.caja import Caja
 
 class CajaRepository:
     
     @staticmethod
-    def crear(caja):
-        """Crea una nueva apertura de caja"""
+    def abrir(caja):
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                INSERT INTO caja (fecha_apertura, monto_inicial, fk_usuario, estado)
+                VALUES (?, ?, ?, 'Abierta')
+            ''', (caja.fecha_apertura, caja.monto_inicial, caja.fk_usuario))
+            conn.commit()
+            caja.id = cursor.lastrowid
+            return caja
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            conn.close()
+
+    @staticmethod
+    def cerrar(id, fecha_cierre, monto_final):
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                UPDATE caja 
+                SET fecha_cierre = ?, monto_final = ?, estado = 'Cerrada'
+                WHERE id = ?
+            ''', (fecha_cierre, monto_final, id))
+            conn.commit()
+        finally:
+            conn.close()
+
+    @staticmethod
+    def obtener_abierta_por_usuario(fk_usuario):
+        """Busca si el usuario tiene una caja abierta actualmente"""
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO caja (fecha_apertura, monto_inicial, fk_usuario, estado)
-            VALUES (?, ?, ?, ?)
-        ''', (caja.fecha_apertura, caja.monto_inicial, caja.fk_usuario, caja.estado))
-        conn.commit()
-        caja.id = cursor.lastrowid
-        conn.close()
-        return caja
-    
-    @staticmethod
-    def obtener_por_id(id):
-        """Obtiene una caja por ID"""
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM caja WHERE id = ?', (id,))
+            SELECT * FROM caja 
+            WHERE fk_usuario = ? AND estado = 'Abierta'
+            ORDER BY id DESC LIMIT 1
+        ''', (fk_usuario,))
         row = cursor.fetchone()
         conn.close()
         if row:
-            return Caja(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+            # Mapeo: id, fecha_apertura, fecha_cierre, monto_inicial, monto_final, fk_usuario, estado
+            return Caja(id=row[0], fecha_apertura=row[1], fecha_cierre=row[2], 
+                       monto_inicial=row[3], monto_final=row[4], 
+                       fk_usuario=row[5], estado=row[6])
         return None
-    
+
     @staticmethod
-    def obtener_caja_abierta():
-        """Obtiene la caja actualmente abierta"""
+    def listar_todas():
+        """Para historial de cajas (Admin)"""
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM caja WHERE estado = 'Abierta' ORDER BY fecha_apertura DESC LIMIT 1")
-        row = cursor.fetchone()
-        conn.close()
-        if row:
-            return Caja(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
-        return None
-    
-    @staticmethod
-    def cerrar_caja(id, fecha_cierre, monto_final):
-        """RF21 - Cierra una caja"""
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            UPDATE caja SET fecha_cierre = ?, monto_final = ?, estado = 'Cerrada'
-            WHERE id = ?
-        ''', (fecha_cierre, monto_final, id))
-        conn.commit()
-        conn.close()
-    
-    @staticmethod
-    def listar():
-        """Lista todas las cajas"""
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM caja ORDER BY fecha_apertura DESC')
+        cursor.execute('SELECT * FROM caja ORDER BY id DESC')
         rows = cursor.fetchall()
         conn.close()
-        return [Caja(r[0], r[1], r[2], r[3], r[4], r[5], r[6]) for r in rows]
+        return [Caja(id=r[0], fecha_apertura=r[1], fecha_cierre=r[2], 
+                     monto_inicial=r[3], monto_final=r[4], 
+                     fk_usuario=r[5], estado=r[6]) for r in rows]

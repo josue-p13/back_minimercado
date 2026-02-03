@@ -1,13 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>Auxiliar</title>
-</head>
-<body>
-    <h1>Panel Cajero</h1>
-    <p>Usted está aquí porque es <strong>Cajero</strong>.</p>
+    <title>Panel de Caja</title>
+    <link rel="stylesheet" href="/static/css/roles/admin.css">
+    <style>
+        .box-status {
+            text-align: center;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
 
-    <a href="/login">Volver al login</a>
+        .status-closed {
+            background-color: #ffebee;
+            border: 2px solid #ef5350;
+        }
+
+        .status-open {
+            background-color: #e8f5e9;
+            border: 2px solid #66bb6a;
+        }
+
+        .big-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .money-input {
+            font-size: 1.5rem;
+            text-align: center;
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main">
+        <div class="header">
+            <h1>Punto de Venta</h1>
+            <div class="header-right">
+                <span class="user">Rol: Cajero</span>
+                <a href="/login" class="logout" style="margin-left:15px; text-decoration:none; color:red;">Salir</a>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div id="view-closed" class="box-status status-closed" style="display:none;">
+                <span class="big-icon">🔒</span>
+                <h2>La Caja está Cerrada</h2>
+                <p>Ingresa el monto inicial (cambio) para comenzar el turno.</p>
+
+                <div style="margin: 20px 0;">
+                    <label>Monto Inicial: $</label>
+                    <input type="number" id="monto_inicial" class="money-input" value="0.00" min="0">
+                </div>
+
+                <button class="btn-primary" onclick="abrirCaja()" style="font-size:1.1rem; padding:10px 30px;">
+                    Abrir Caja
+                </button>
+            </div>
+
+            <div id="view-open" class="box-status status-open" style="display:none;">
+                <span class="big-icon">✅</span>
+                <h2>Caja Abierta</h2>
+                <p>Turno iniciado: <strong id="fecha_apertura_display">--/--/--</strong></p>
+                <p>Base inicial: <strong id="base_inicial_display">$0.00</strong></p>
+
+                <hr style="margin: 20px 0; border:0; border-top:1px solid #ccc;">
+
+                <div style="display: flex; gap: 20px; justify-content: center;">
+                    <button class="btn-primary" onclick="irAFacturacion()">
+                        🛒 Ir a Facturación
+                    </button>
+
+                    <button class="btn-secondary" onclick="mostrarCierre()">
+                        🔒 Cerrar Caja
+                    </button>
+                </div>
+            </div>
+
+            <div id="zona-cierre" class="card"
+                style="display:none; max-width: 500px; margin: 20px auto; text-align: center;">
+                <h3>Cierre de Turno</h3>
+                <p>Cuenta el dinero físico en caja e ingrésalo.</p>
+
+                <div style="margin: 20px 0;">
+                    <label>Total Efectivo: $</label>
+                    <input type="number" id="monto_final" class="money-input" placeholder="0.00">
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn-primary" style="background-color: #d32f2f;" onclick="cerrarCaja()">Confirmar
+                        Cierre</button>
+                    <button class="btn-secondary" onclick="ocultarCierre()">Cancelar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/static/js/roles/cajero.js"></script>
 </body>
+
 </html>

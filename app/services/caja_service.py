@@ -1,67 +1,37 @@
-"""
-Servicio de Caja
-RF20, RF21 - Control de apertura y cierre de caja
-"""
 from datetime import datetime
-from app.models.caja import Caja
 from app.repositories.caja_repository import CajaRepository
+from app.models.caja import Caja
 
 class CajaService:
     
     @staticmethod
     def abrir_caja(monto_inicial, fk_usuario):
-        """RF20 - Abre una nueva caja"""
-        # Verificar que no hay caja abierta
-        caja_abierta = CajaRepository.obtener_caja_abierta()
+        # 1. Verificar que no tenga ya una abierta
+        caja_abierta = CajaRepository.obtener_abierta_por_usuario(fk_usuario)
         if caja_abierta:
-            raise Exception("Ya existe una caja abierta. Cerrar la caja actual antes de abrir una nueva")
+            raise Exception("Ya tienes una caja abierta. Ciérrala antes de abrir una nueva.")
+            
+        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        nueva_caja = Caja(fecha_apertura=fecha_actual, monto_inicial=monto_inicial, fk_usuario=fk_usuario)
         
-        if monto_inicial < 0:
-            raise Exception("El monto inicial no puede ser negativo")
-        
-        caja = Caja(
-            fecha_apertura=datetime.now().isoformat(),
-            monto_inicial=monto_inicial,
-            fk_usuario=fk_usuario,
-            estado='Abierta'
-        )
-        return CajaRepository.crear(caja)
-    
+        return CajaRepository.abrir(nueva_caja)
+
     @staticmethod
-    def cerrar_caja(monto_final):
-        """RF21 - Cierra la caja actual"""
-        caja = CajaRepository.obtener_caja_abierta()
-        if not caja:
-            raise Exception("No hay caja abierta para cerrar")
+    def cerrar_caja(monto_final, fk_usuario):
+        # 1. Buscar la caja que vamos a cerrar
+        caja_abierta = CajaRepository.obtener_abierta_por_usuario(fk_usuario)
+        if not caja_abierta:
+            raise Exception("No hay ninguna caja abierta para cerrar.")
+            
+        fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-        if monto_final < 0:
-            raise Exception("El monto final no puede ser negativo")
-        
-        CajaRepository.cerrar_caja(
-            caja.id,
-            datetime.now().isoformat(),
-            monto_final
-        )
-        
-        # Calcular diferencia
-        diferencia = monto_final - caja.monto_inicial
-        return {
-            'id': caja.id,
-            'monto_inicial': caja.monto_inicial,
-            'monto_final': monto_final,
-            'diferencia': diferencia
-        }
-    
+        CajaRepository.cerrar(caja_abierta.id, fecha_actual, monto_final)
+        return True
+
     @staticmethod
-    def obtener_caja_actual():
-        """Obtiene la caja actualmente abierta"""
-        caja = CajaRepository.obtener_caja_abierta()
-        if caja:
-            return caja.to_dict()
-        return None
-    
+    def obtener_caja_actual(fk_usuario):
+        return CajaRepository.obtener_abierta_por_usuario(fk_usuario)
+        
     @staticmethod
     def listar_cajas():
-        """Lista todas las cajas"""
-        cajas = CajaRepository.listar()
-        return [c.to_dict() for c in cajas]
+        return [c.to_dict() for c in CajaRepository.listar_todas()]
