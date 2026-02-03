@@ -121,6 +121,9 @@ class VentaRequest(BaseModel):
     items: List[ItemVenta]
     fk_cliente: Optional[int] = None
     fk_usuario: int
+    metodo_pago: str
+    monto_pago: float
+    referencia: Optional[str] = None
 
 # --- Modelos Cliente ---
 class ClienteCreate(BaseModel):
@@ -379,13 +382,7 @@ def listar_cajas():
 
 @app.post("/api/ventas")
 def realizar_venta(venta: VentaRequest):
-    """Realizar una venta (RF14, RF15)"""
-    items = [item.dict() for item in venta.items]
-    resultado = VentaController.realizar_venta(
-        items,
-        venta.fk_cliente,
-        venta.fk_usuario
-    )
+    resultado = VentaController.realizar_venta(venta) 
     if not resultado['success']:
         raise HTTPException(status_code=400, detail=resultado['message'])
     return resultado

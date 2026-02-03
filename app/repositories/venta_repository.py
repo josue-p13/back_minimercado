@@ -8,16 +8,17 @@ class VentaRepository:
         conn = get_connection()
         cursor = conn.cursor()
         try:
-            # 1. Insertar Cabecera de Venta
+            # Insertar Cabecera (ACTUALIZADO CON NUEVOS CAMPOS)
             cursor.execute('''
-                INSERT INTO venta (fecha, total, fk_cliente, fk_usuario, fk_caja)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (venta.fecha, venta.total, venta.fk_cliente, venta.fk_usuario, venta.fk_caja))
+                INSERT INTO venta (fecha, total, fk_cliente, fk_usuario, fk_caja, metodo_pago, monto_pago, cambio, referencia)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (venta.fecha, venta.total, venta.fk_cliente, venta.fk_usuario, venta.fk_caja, 
+                  venta.metodo_pago, venta.monto_pago, venta.cambio, venta.referencia))
             
             venta_id = cursor.lastrowid
             venta.id = venta_id
             
-            # 2. Insertar Detalles (Items)
+            # (El resto del código de insertar detalles queda IGUAL)
             for item in venta.items:
                 cursor.execute('''
                     INSERT INTO detalle_venta (fk_venta, fk_producto, cantidad, precio_unitario, subtotal)

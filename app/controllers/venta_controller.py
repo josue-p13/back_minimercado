@@ -3,18 +3,26 @@ from app.services.venta_service import VentaService
 class VentaController:
     
     @staticmethod
-    def realizar_venta(items, fk_cliente, fk_usuario):
+    def realizar_venta(venta_request): # Recibimos el objeto Pydantic completo
         try:
-            # Si fk_usuario viene vacio, usamos 1 temporalmente
-            usuario_id = fk_usuario if fk_usuario else 1
+            # Obtenemos usuario (usamos 1 temporalmente o la logica de token futura)
+            usuario_id = venta_request.fk_usuario if venta_request.fk_usuario else 1
             
-            venta = VentaService.realizar_venta(items, fk_cliente, usuario_id)
+            venta = VentaService.realizar_venta(
+                venta_request.items,
+                venta_request.fk_cliente,
+                usuario_id,
+                venta_request.metodo_pago, # <---
+                venta_request.monto_pago,  # <---
+                venta_request.referencia   # <---
+            )
             
             return {
                 'success': True,
                 'message': 'Venta registrada correctamente',
                 'venta_id': venta.id,
-                'total': venta.total
+                'total': venta.total,
+                'cambio': venta.cambio
             }
         except Exception as e:
             return {'success': False, 'message': str(e)}

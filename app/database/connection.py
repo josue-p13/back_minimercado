@@ -39,6 +39,7 @@ def init_db():
     ''')
     
     # Tabla Producto (RF10 - Control de inventario)
+    # ACTUALIZADO: Se agrega columna 'codigo_barras'
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS producto (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,6 +80,7 @@ def init_db():
     ''')
     
     # Tabla Venta (RF14, RF15 - Procesar ventas)
+    # ACTUALIZADO: Se agregan columnas para el control de pagos
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS venta (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,6 +89,10 @@ def init_db():
             fk_cliente INTEGER,
             fk_usuario INTEGER,
             fk_caja INTEGER,
+            metodo_pago TEXT,
+            monto_pago REAL,
+            cambio REAL,
+            referencia TEXT,
             FOREIGN KEY (fk_cliente) REFERENCES cliente(id),
             FOREIGN KEY (fk_usuario) REFERENCES usuario(id),
             FOREIGN KEY (fk_caja) REFERENCES caja(id)
