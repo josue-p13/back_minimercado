@@ -11,30 +11,34 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================
 
 async function cargarProductos() {
-    const res = await fetch("/api/inventario/productos");
-    const data = await res.json();
-    if (data.success) {
-        productosGlobal = data.productos;
-        renderizarProductos(productosGlobal);
-    }
+    try {
+        const res = await fetch("/api/inventario/productos");
+        const data = await res.json();
+        if (data.success) {
+            productosGlobal = data.productos;
+            renderizarProductos(productosGlobal);
+        }
+    } catch (e) { console.error("Error cargando productos", e); }
 }
 
 async function cargarClientes() {
-    const res = await fetch("/api/clientes");
-    const data = await res.json();
-    if (data.success) {
-        const select = document.getElementById("select-cliente");
-        data.clientes.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c.id;
-            opt.text = c.nombre;
-            select.appendChild(opt);
-        });
-    }
+    try {
+        const res = await fetch("/api/clientes");
+        const data = await res.json();
+        if (data.success) {
+            const select = document.getElementById("select-cliente");
+            data.clientes.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.id;
+                opt.text = c.nombre;
+                select.appendChild(opt);
+            });
+        }
+    } catch (e) { console.error("Error cargando clientes", e); }
 }
 
 // ==========================================
-// 2. RENDERIZADO Y BUSQUEDA
+// 2. RENDERIZADO Y BÚSQUEDA
 // ==========================================
 
 function renderizarProductos(lista) {
@@ -42,7 +46,7 @@ function renderizarProductos(lista) {
     container.innerHTML = "";
 
     lista.forEach(p => {
-        if (p.stock > 0) { // Solo mostrar si hay stock
+        if (p.stock > 0) {
             const card = document.createElement("div");
             card.className = "product-card";
             card.onclick = () => agregarAlCarrito(p);
@@ -63,11 +67,10 @@ function filtrarProductos() {
 }
 
 // ==========================================
-// 3. LOGICA DEL CARRITO
+// 3. LÓGICA DEL CARRITO
 // ==========================================
 
 function agregarAlCarrito(producto) {
-    // Buscar si ya existe
     const itemExistente = carrito.find(item => item.producto_id === producto.id);
 
     if (itemExistente) {
@@ -116,7 +119,7 @@ function actualizarVistaCarrito() {
 }
 
 // ==========================================
-// 4. PROCESO DE PAGO (MODAL)
+// 4. LÓGICA DEL MODAL DE PAGO
 // ==========================================
 
 function procesarVenta() {
@@ -125,26 +128,23 @@ function procesarVenta() {
         return;
     }
 
-    // Calcular total actual
+    // Calcular total
     const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
 
-    // Configurar Modal
+    // Abrir Modal
     document.getElementById("modal-total-pagar").textContent = "$" + total.toFixed(2);
     document.getElementById("modal-pago").style.display = "flex";
 
-    // Resetear campos del modal
+    // Resetear campos
     document.getElementById("select-metodo").value = "Efectivo";
     document.getElementById("input-recibido").value = "";
     document.getElementById("lbl-cambio").textContent = "$0.00";
     document.getElementById("lbl-cambio").style.color = "#666";
-
     document.getElementById("input-lote").value = "";
     document.getElementById("input-voucher").value = "";
     document.getElementById("input-ref-transf").value = "";
 
-    cambiarMetodoPago(); // Ajustar visibilidad inicial
-
-    // Enfocar input efectivo automáticamente
+    cambiarMetodoPago();
     setTimeout(() => document.getElementById("input-recibido").focus(), 100);
 }
 
@@ -155,12 +155,10 @@ function cerrarModalPago() {
 function cambiarMetodoPago() {
     const metodo = document.getElementById("select-metodo").value;
 
-    // Ocultar todos primero
     document.getElementById("div-efectivo").style.display = "none";
     document.getElementById("div-tarjeta").style.display = "none";
     document.getElementById("div-transferencia").style.display = "none";
 
-    // Mostrar el seleccionado
     if (metodo === "Efectivo") {
         document.getElementById("div-efectivo").style.display = "block";
         setTimeout(() => document.getElementById("input-recibido").focus(), 100);
@@ -179,17 +177,17 @@ function calcularCambio() {
     const cambio = recibido - total;
 
     const lbl = document.getElementById("lbl-cambio");
-    if (cambio >= 0) {
-        lbl.textContent = "$" + cambio.toFixed(2);
-        lbl.style.color = "#2E7D32"; // Verde
+    if (cambio >= -0.01) { // Pequeña tolerancia para floats
+        lbl.textContent = "$" + (cambio > 0 ? cambio : 0).toFixed(2);
+        lbl.style.color = "#2E7D32";
     } else {
         lbl.textContent = "Falta: $" + Math.abs(cambio).toFixed(2);
-        lbl.style.color = "#D32F2F"; // Rojo
+        lbl.style.color = "#D32F2F";
     }
 }
 
 // ==========================================
-// 5. ENVÍO FINAL AL BACKEND
+// 5. ENVÍO AL SERVIDOR (AQUÍ OCURRE EL COBRO)
 // ==========================================
 
 async function confirmarVenta() {
@@ -200,45 +198,38 @@ async function confirmarVenta() {
     let montoPago = 0;
     let referencia = "";
 
-    // --- Validaciones según método ---
+    // VALIDACIONES DEL CLIENTE
     if (metodo === "Efectivo") {
         montoPago = parseFloat(document.getElementById("input-recibido").value) || 0;
-
-        // Pequeño margen de error para flotantes, pero validamos estricto
         if (montoPago < total) {
-            alert("El monto recibido es menor al total de la venta.");
+            alert("El monto recibido es menor al total.");
             return;
         }
     } else if (metodo === "Tarjeta") {
-        montoPago = total; // En tarjeta se asume pago exacto
+        montoPago = total;
         const lote = document.getElementById("input-lote").value.trim();
         const voucher = document.getElementById("input-voucher").value.trim();
-
         if (!lote || !voucher) {
-            alert("Por favor ingresa el Lote y el Número de Comprobante.");
-            return;
+            alert("Ingrese Lote y Voucher"); return;
         }
         referencia = `Lote: ${lote} - Ref: ${voucher}`;
-
     } else if (metodo === "Transferencia") {
-        montoPago = total; // En transferencia se asume pago exacto
+        montoPago = total;
         const ref = document.getElementById("input-ref-transf").value.trim();
-
         if (!ref) {
-            alert("Por favor ingresa el Número de Referencia de la transferencia.");
-            return;
+            alert("Ingrese Referencia"); return;
         }
         referencia = `Ref: ${ref}`;
     }
 
-    // --- Preparar JSON para el backend ---
+    // JSON QUE SE ENVÍA (Debe coincidir con VentaRequest en Python)
     const ventaData = {
         items: carrito.map(i => ({ producto_id: i.producto_id, cantidad: i.cantidad })),
         fk_cliente: clienteId ? parseInt(clienteId) : null,
-        fk_usuario: 1, // Nota: Esto se reemplazará por el usuario del Token en el futuro
+        fk_usuario: 1, // Temporal
         metodo_pago: metodo,
         monto_pago: montoPago,
-        referencia: referencia
+        referencia: referencia ? referencia : null // Enviar null si está vacío
     };
 
     try {
@@ -251,25 +242,22 @@ async function confirmarVenta() {
         const resultado = await res.json();
 
         if (resultado.success) {
-            // Mensaje de éxito
-            let msg = "✅ Venta realizada correctamente.";
-            if (metodo === "Efectivo") {
+            let msg = "✅ Venta exitosa.";
+            if (metodo === "Efectivo" && resultado.cambio > 0) {
                 msg += `\n\n💰 Su cambio es: $${resultado.cambio.toFixed(2)}`;
             }
             alert(msg);
 
-            // Resetear todo
             cerrarModalPago();
             carrito = [];
             actualizarVistaCarrito();
-            cargarProductos(); // Recargar para ver el stock actualizado
-
+            cargarProductos();
         } else {
-            alert("❌ Error: " + (resultado.message || "No se pudo procesar la venta."));
+            alert("Error del servidor: " + (resultado.message || resultado.detail));
         }
 
     } catch (error) {
         console.error(error);
-        alert("Error de conexión con el servidor.");
+        alert("Error de conexión");
     }
 }

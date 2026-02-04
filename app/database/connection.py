@@ -80,7 +80,6 @@ def init_db():
     ''')
     
     # Tabla Venta (RF14, RF15 - Procesar ventas)
-    # ACTUALIZADO: Se agregan columnas para el control de pagos
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS venta (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
